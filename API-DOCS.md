@@ -10,7 +10,16 @@ http://localhost:3000/api/whatsapp
 
 ## Authentication
 
-Currently, this API doesn't implement authentication. If you plan to deploy this API to production, consider adding authentication.
+All API requests require an `Authorization` header with a valid token. The token can be set as an environment variable `API_TOKEN`.
+
+### Example
+
+Include the token in the `Authorization` header:
+
+```bash
+curl -X GET http://localhost:3000/api/whatsapp/status \
+  -H "Authorization: YOUR_API_TOKEN"
+```
 
 ## Endpoints
 

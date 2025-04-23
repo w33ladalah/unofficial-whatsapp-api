@@ -1,9 +1,23 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { WhatsAppClient, SendMessageOptions } from '../types';
 import { sendTextMessage, sendMessage } from '../controllers/messageHandler';
 
+// Middleware for token-based authentication
+const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
+  const token = req.headers['authorization'];
+
+  if (!token || token !== process.env.API_TOKEN) {
+    return res.status(403).json({ success: false, error: 'Forbidden: Invalid or missing token' });
+  }
+
+  next();
+};
+
 // Initialize router
 const router: express.Router = express.Router();
+
+// Apply authentication middleware to all routes
+router.use(authenticateToken);
 
 // Store the client instance
 let whatsappClient: WhatsAppClient;
