@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { WhatsAppClient, SendMessageOptions } from '../types';
 import { sendTextMessage, sendMessage } from '../controllers/messageHandler';
+import { qrCodeEmitter } from '../utils/whatsapp';
 
 // Middleware for token-based authentication
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
@@ -154,6 +155,22 @@ router.get('/status', (req: Request, res: Response) => {
     success: true,
     connected: whatsappClient.isConnected
   });
+});
+
+/**
+ * @route   GET /api/whatsapp/qr
+ * @desc    Get the QR code for WhatsApp authentication
+ * @access  Public
+ */
+router.get('/qr', (req: Request, res: Response) => {
+  qrCodeEmitter.once('qr', (qrCode: string) => {
+    res.status(200).json({ success: true, qr: qrCode });
+  });
+
+  // If no QR code is emitted within 10 seconds, return a timeout response
+  setTimeout(() => {
+    res.status(408).json({ success: false, error: 'QR code generation timed out' });
+  }, 10000);
 });
 
 export default router;

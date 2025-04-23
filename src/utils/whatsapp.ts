@@ -1,3 +1,4 @@
+// Import necessary modules
 import {
   makeWASocket,
   DisconnectReason,
@@ -10,6 +11,7 @@ import { Boom } from '@hapi/boom';
 import { WhatsAppClient } from '../types';
 import * as fs from 'fs';
 import * as path from 'path';
+import { EventEmitter } from 'events';
 
 // Define log level type
 type LogLevel = 'silent' | 'error' | 'warn' | 'info' | 'debug' | 'trace';
@@ -32,12 +34,14 @@ const createLogger = (level: LogLevel = 'info') => ({
   child: (opts: any) => createLogger(opts.level || level)
 });
 
+// Create an event emitter to share the QR code
+export const qrCodeEmitter = new EventEmitter();
+
 // Create a client instance for managing WhatsApp connection
 export class WhatsAppClientImpl implements WhatsAppClient {
   socket!: WASocket; // Using definite assignment assertion
   isConnected: boolean = false;
-
-  private sessionId: string;
+  private sessionId: string; // Used to identify the session directory
   private sessionDir: string;
 
   constructor(sessionId: string = 'default') {
@@ -67,16 +71,20 @@ export class WhatsAppClientImpl implements WhatsAppClient {
         creds: state.creds,
         keys: makeCacheableSignalKeyStore(state.keys, logger),
       },
-      printQRInTerminal: true, // Print QR code in terminal
+      printQRInTerminal: false, // Disable printing QR in terminal
       browser: ['WhatsApp API', 'Chrome', '4.0.0'], // Browser metadata
       syncFullHistory: true, // Sync message history
       logger // Pass the logger for all logging
     });
 
-    // Setup event listeners
+    // Emit the QR code when it is generated
     this.socket.ev.on('connection.update', async (update) => {
-      const { connection, lastDisconnect } = update;
+      const { qr, connection, lastDisconnect } = update;
 
+      if (qr) {
+        qrCodeEmitter.emit('qr', qr);
+        console.log('QR Code generated:', qr); // Log QR code for debugging
+      }
       if (connection === 'close') {
         const shouldReconnect = (lastDisconnect?.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut;
 
@@ -92,7 +100,7 @@ export class WhatsAppClientImpl implements WhatsAppClient {
         console.log('Connection opened');
         this.isConnected = true;
       }
-    });
+    }); // Correctly close the event listener block
 
     // Save credentials when updated
     this.socket.ev.on('creds.update', saveCreds);
@@ -101,13 +109,11 @@ export class WhatsAppClientImpl implements WhatsAppClient {
   }
 
   async disconnect(): Promise<void> {
-    if (this.socket) {
-      await this.socket.end(undefined); // Passing undefined as the parameter
-      this.isConnected = false;
-      console.log('Disconnected from WhatsApp');
-    }
+    this.socket.end(undefined); // No need for 'await' here
+    this.isConnected = false;
+    console.log('Disconnected from WhatsApp');
   }
-}
+} // Correctly close the class block
 
 // Helper function to create a new WhatsApp client
 export const createWhatsAppClient = async (sessionId: string = 'default'): Promise<WhatsAppClient> => {
