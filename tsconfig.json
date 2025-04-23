@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    /* Visit https://aka.ms/tsconfig to read more about this file */
+    "target": "es2016",
+    "module": "commonjs",
+    "outDir": "./dist", /* Output directory for compiled files */
+    "rootDir": "./src", /* Source code directory */
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "sourceMap": true,  /* Generate source maps for easier debugging */
+    "resolveJsonModule": true /* Allow importing JSON files */
+  },
+  "include": ["src/**/*"]
+}
