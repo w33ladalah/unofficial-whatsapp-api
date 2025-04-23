@@ -7,6 +7,12 @@ export interface WhatsAppClient {
   socket: WASocket;
   isConnected: boolean;
   disconnect(): Promise<void>;
+
+  /**
+   * Authenticate the WhatsApp client
+   * @returns A promise that resolves when authentication is successful
+   */
+  authenticate(): Promise<string>;
 }
 
 /**

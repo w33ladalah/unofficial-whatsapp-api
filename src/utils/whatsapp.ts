@@ -78,20 +78,20 @@ export class WhatsAppClientImpl implements WhatsAppClient {
     });
 
     // Emit the QR code when it is generated
-    this.socket.ev.on('connection.update', async (update) => {
-      const { qr, connection, lastDisconnect } = update;
+    this.socket.ev.on('connection.update', (update) => {
+      const { connection, qr, lastDisconnect } = update as any;
 
       if (qr) {
         qrCodeEmitter.emit('qr', qr);
-        console.log('QR Code generated:', qr); // Log QR code for debugging
       }
+
       if (connection === 'close') {
         const shouldReconnect = (lastDisconnect?.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut;
 
         console.log('Connection closed due to ', lastDisconnect?.error, ', reconnecting ', shouldReconnect);
 
         if (shouldReconnect) {
-          await this.connect();
+          this.connect().catch(console.error);
         } else {
           console.log('Connection closed. Logged out.');
           this.isConnected = false;
@@ -100,7 +100,7 @@ export class WhatsAppClientImpl implements WhatsAppClient {
         console.log('Connection opened');
         this.isConnected = true;
       }
-    }); // Correctly close the event listener block
+    });
 
     // Save credentials when updated
     this.socket.ev.on('creds.update', saveCreds);
@@ -112,6 +112,32 @@ export class WhatsAppClientImpl implements WhatsAppClient {
     this.socket.end(undefined); // No need for 'await' here
     this.isConnected = false;
     console.log('Disconnected from WhatsApp');
+  }
+
+  /**
+   * Authenticate the WhatsApp client
+   * @returns A promise that resolves when authentication is successful
+   */
+  async authenticate(): Promise<string> {
+    if (!this.socket) {
+      throw new Error('WhatsApp client is not initialized');
+    }
+
+    return new Promise((resolve, reject) => {
+      this.socket.ev.on('connection.update', (update: Partial<{ qr: string }>) => {
+        if (update.qr) {
+          qrCodeEmitter.emit('qr', update.qr);
+        }
+      });
+
+      this.socket.ev.on('connection.update', (update) => {
+        if (update.connection === 'open') {
+          resolve('Authentication successful');
+        } else if (update.connection === 'close') {
+          reject(new Error('Authentication failed'));
+        }
+      });
+    });
   }
 } // Correctly close the class block
 

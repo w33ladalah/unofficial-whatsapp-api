@@ -173,4 +173,35 @@ router.get('/qr', (req: Request, res: Response) => {
   }, 10000);
 });
 
+/**
+ * @route   POST /api/whatsapp/auth
+ * @desc    Perform WhatsApp authentication
+ * @access  Public
+ */
+router.post('/auth', async (req: Request, res: Response) => {
+  try {
+    if (!whatsappClient) {
+      return res.status(500).json({
+        success: false,
+        error: 'WhatsApp client not initialized'
+      });
+    }
+
+    // Trigger authentication process
+    const authResult = await whatsappClient.authenticate();
+
+    res.status(200).json({
+      success: true,
+      message: 'Authentication successful',
+      data: authResult
+    });
+  } catch (error: any) {
+    console.error('Error during WhatsApp authentication:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Error during authentication'
+    });
+  }
+});
+
 export default router;
