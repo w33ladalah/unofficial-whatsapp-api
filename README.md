@@ -2,16 +2,16 @@
 
 A Node.js TypeScript implementation for sending and receiving WhatsApp messages using the [Baileys](https://github.com/WhiskeySockets/Baileys) library.
 
-## Features
+## Updated Features
 
-- Send and receive WhatsApp messages
-- Support for text, image, video, audio, and sticker messages
-- Session management for persistent authentication
-- TypeScript support for better developer experience and type safety
+- Enhanced session management with automatic reconnection
+- Improved error handling and logging
+- Support for sending location and contact messages
+- Added support for group messaging
 
-## Prerequisites
+## Updated Prerequisites
 
-- Node.js (v14+ recommended)
+- Node.js (v16+ recommended)
 - A WhatsApp account for testing
 
 ## Installation
@@ -23,7 +23,7 @@ A Node.js TypeScript implementation for sending and receiving WhatsApp messages 
 npm install
 ```
 
-## Usage
+## Updated Usage
 
 ### Building the project
 
@@ -41,6 +41,22 @@ npm run dev
 
 ```bash
 npm start
+```
+
+### Running Tests
+
+To run the test suite:
+
+```bash
+npm test
+```
+
+### Debugging
+
+To enable debugging logs, set the `DEBUG` environment variable:
+
+```bash
+DEBUG=whatsapp-api:* npm start
 ```
 
 ## Authentication
@@ -81,6 +97,8 @@ You can send various types of messages:
 - Videos with captions
 - Audio messages
 - Stickers
+- Location messages
+- Contact messages
 
 ## Handling Incoming Messages
 
@@ -94,6 +112,19 @@ The application automatically sets up listeners for incoming messages. You can c
   - `/utils`: Utility functions for WhatsApp operations
 - `/dist`: Compiled JavaScript code
 - `/sessions`: WhatsApp session data
+
+## Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a new branch for your feature or bugfix
+3. Commit your changes with clear messages
+4. Submit a pull request
+
+## Support
+
+For issues or questions, please open an issue on GitHub or contact the maintainer.
 
 ## License
 
