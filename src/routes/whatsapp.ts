@@ -2,13 +2,21 @@ import express, { Request, Response, NextFunction } from 'express';
 import { WhatsAppClient, SendMessageOptions } from '../types';
 import { sendTextMessage, sendMessage } from '../controllers/messageHandler';
 import { qrCodeEmitter, getLatestQrCode } from '../utils/whatsapp';
+import multer from 'multer';
+import { uploadExcel, downloadTemplate, sendBulk } from '../controllers/messageHandler';
 
-// Middleware for token-based authentication
+// Middleware for token-based authentication using 'x-api-token' header and environment variable
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
-  const token = req.headers['authorization'];
+  // Read token from custom header 'x-api-token'
+  const token = req.headers['x-api-token'];
+  const validToken = process.env.API_TOKEN;
 
-  if (!token || token !== process.env.API_TOKEN) {
-    return res.status(403).json({ success: false, error: 'Forbidden: Invalid or missing token' });
+  if (!validToken) {
+    return res.status(500).json({ success: false, error: 'API token not set in environment variables' });
+  }
+
+  if (!token || token !== validToken) {
+    return res.status(403).json({ success: false, error: 'Forbidden: Invalid or missing API token in header' });
   }
 
   next();
@@ -213,5 +221,11 @@ router.post('/auth', async (req: Request, res: Response) => {
     });
   }
 });
+
+const upload = multer({ dest: 'uploads/' });
+
+router.post('/upload-excel', upload.single('file'), uploadExcel);
+router.get('/download-template', downloadTemplate);
+router.post('/send/bulk', sendBulk);
 
 export default router;

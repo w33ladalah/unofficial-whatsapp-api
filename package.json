@@ -17,7 +17,9 @@
   "description": "",
   "devDependencies": {
     "@types/cors": "^2.8.17",
+    "@types/dotenv": "^6.1.1",
     "@types/express": "^4.17.21",
+    "@types/multer": "^1.4.12",
     "@types/node": "^22.14.1",
     "@types/qrcode-terminal": "^0.12.2",
     "nodemon": "^3.1.10",
@@ -26,10 +28,14 @@
   },
   "dependencies": {
     "@hapi/boom": "^10.0.1",
+    "@types/exceljs": "^0.5.3",
     "@whiskeysockets/baileys": "^6.17.16",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "exceljs": "^4.4.0",
     "express": "^4.18.3",
+    "multer": "^1.4.5-lts.2",
     "qrcode-terminal": "^0.12.0"
   }
 }
