@@ -37,6 +37,13 @@ const createLogger = (level: LogLevel = 'info') => ({
 // Create an event emitter to share the QR code
 export const qrCodeEmitter = new EventEmitter();
 
+// Buffer the latest QR code
+let latestQrCode: string | null = null;
+
+export function getLatestQrCode(): string | null {
+  return latestQrCode;
+}
+
 // Create a client instance for managing WhatsApp connection
 export class WhatsAppClientImpl implements WhatsAppClient {
   socket!: WASocket; // Using definite assignment assertion
@@ -82,6 +89,7 @@ export class WhatsAppClientImpl implements WhatsAppClient {
       const { connection, qr, lastDisconnect } = update as any;
 
       if (qr) {
+        latestQrCode = qr;
         qrCodeEmitter.emit('qr', qr);
       }
 

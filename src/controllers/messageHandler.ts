@@ -1,5 +1,4 @@
 import { WhatsAppClient, Message, SendMessageOptions } from '../types';
-import { Boom } from '@hapi/boom';
 import { jidDecode } from '@whiskeysockets/baileys';
 
 /**

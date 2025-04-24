@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { WhatsAppClient, SendMessageOptions } from '../types';
 import { sendTextMessage, sendMessage } from '../controllers/messageHandler';
-import { qrCodeEmitter } from '../utils/whatsapp';
+import { qrCodeEmitter, getLatestQrCode } from '../utils/whatsapp';
 
 // Middleware for token-based authentication
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
@@ -163,14 +163,24 @@ router.get('/status', (req: Request, res: Response) => {
  * @access  Public
  */
 router.get('/qr', (req: Request, res: Response) => {
+  console.log('QR code generation requested'); // Debugging log
+
+  const latestQr = getLatestQrCode();
+  if (latestQr) {
+    console.log('Returning buffered QR code:', latestQr);
+    return res.status(200).json({ success: true, qr: latestQr });
+  }
+
   qrCodeEmitter.once('qr', (qrCode: string) => {
+    console.log('QR code emitted:', qrCode); // Debugging log
     res.status(200).json({ success: true, qr: qrCode });
   });
 
-  // If no QR code is emitted within 10 seconds, return a timeout response
+  // If no QR code is emitted within 20 seconds, return a timeout response
   setTimeout(() => {
+    console.error('QR code generation timed out'); // Debugging log
     res.status(408).json({ success: false, error: 'QR code generation timed out' });
-  }, 10000);
+  }, 20000); // Increased timeout to 20 seconds
 });
 
 /**

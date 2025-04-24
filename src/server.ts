@@ -7,7 +7,7 @@ import whatsappRoutes, { setWhatsAppClient } from './routes/whatsapp';
 
 // Initialize Express app
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3002;
 
 // Middleware
 app.use(cors());
@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
 /**
  * Initialize WhatsApp client and start the server
  */
-async function startServer() {
+export async function startServer() {
   try {
     console.log('Initializing WhatsApp client...');
 
@@ -57,5 +57,4 @@ async function startServer() {
   }
 }
 
-// Start the server
-startServer();
+
