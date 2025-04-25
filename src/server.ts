@@ -14,13 +14,13 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Serve static files from public directory
+import path from 'path';
+app.use(express.static(path.resolve(process.cwd(), 'public')));
+
 // API routes
 app.use('/api/whatsapp', whatsappRoutes);
 
-// Simple root route
-app.get('/', (req, res) => {
-  res.json({ message: 'WhatsApp API Server is running!' });
-});
 
 /**
  * Initialize WhatsApp client and start the server
@@ -56,5 +56,3 @@ export async function startServer() {
     process.exit(1);
   }
 }
-
-
