@@ -5,21 +5,33 @@ This documentation provides details on how to interact with the WhatsApp API end
 ## Base URL
 
 ```
-http://localhost:3000/api/whatsapp
+http://localhost:3002/api/whatsapp
 ```
 
 ## Authentication
 
-All API requests require an `Authorization` header with a valid token. The token can be set as an environment variable `API_TOKEN`.
+All API requests require an `x-api-token` header with a valid token. The token value is set in the `.env` file as `API_TOKEN`.
 
 ### Example
 
-Include the token in the `Authorization` header:
+Include the token in the `x-api-token` header:
 
 ```bash
-curl -X GET http://localhost:3000/api/whatsapp/status \
-  -H "Authorization: YOUR_API_TOKEN"
+curl -X GET http://localhost:3002/api/whatsapp/status \
+  -H "x-api-token: YOUR_API_TOKEN"
 ```
+
+## Web UI QR Code Login
+
+You can also authenticate using a web browser:
+
+1. Start the server (`npm run dev` or `npm start`).
+2. Open your browser and go to [http://localhost:3002/](http://localhost:3002/).
+3. When prompted, enter your API token (from `.env`, `API_TOKEN`).
+4. Scan the displayed QR code with your WhatsApp mobile app to authenticate.
+5. After successful login, a "Login Success!" message will appear.
+
+If you see a forbidden error, ensure your API token matches the backend configuration.
 
 ## Endpoints
 
